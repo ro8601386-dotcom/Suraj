@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Beeru Bike Point - Bill</title>
+<style>
+  body{font-family:Arial, sans-serif;margin:20px}
+  h1{font-size:20px}
+  .row{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+  input{padding:6px;font-size:14px}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  table th, table td{border:1px solid #bbb;padding:6px;text-align:left}
+  .actions{margin-top:12px}
+  button{padding:8px 12px}
+  /* Preview section styling */
+  #previewSection{border-top:2px solid #000;margin-top:30px;padding-top:20px}
+  .header{display:flex;justify-content:space-between;align-items:center}
+  .title{font-size:22px;font-weight:700}
+  .sub{font-size:12px;color:#333}
+  .contact{text-align:right;font-size:12px}
+  .info{margin-top:12px;display:flex;justify-content:space-between}
+  .info div{min-width:0}
+  .totals{margin-top:10px;display:flex;justify-content:space-between}
+  .right{min-width:260px;text-align:right}
+  .footer{margin-top:20px;font-size:12px}
+</style>
+</head>
+<body>
+
+<h1>Beeru Bike Point — Create Bill</h1>
+
+<!-- FORM -->
+<div>
+  <div class="row">
+    <label>Customer:</label><input id="customer" style="flex:1" />
+    <label>Bill No.:</label><input id="billNo" style="width:80px" value="832" />
+    <label>Date:</label><input id="date" type="date" />
+  </div>
+  <div class="row">
+    <label>Bike No.:</label><input id="bikeNo" style="flex:1" />
+    <label>Phone:</label><input id="phone" style="width:140px" />
+  </div>
+</div>
+
+<h3>Items</h3>
+<table id="itemsTable">
+<thead>
+<tr>
+  <th style="width:60px">Sr. No.</th>
+  <th>Particulars</th>
+  <th style="width:80px">Qty</th>
+  <th style="width:120px">Rate (₹)</th>
+  <th style="width:120px">Amount (₹)</th>
+  <th style="width:60px">Action</th>
+</tr>
+</thead>
+<tbody id="itemsBody"></tbody>
+</table>
+
+<div style="margin-top:8px"><button id="addRowBtn">+ Add Row</button></div>
+
+<div style="margin-top:12px">
+  <label>Rupees In Words:</label>
+  <input id="rupeesWords" style="width:300px" />
+  <span style="margin-left:20px"><strong>Total: ₹ <span id="grandTotal">0.00</span></strong></span>
+</div>
+
+<div class="actions">
+  <button id="previewBtn">Show Bill Preview Below</button>
+  <button id="clearBtn" style="margin-left:8px">Clear</button>
+</div>
+
+<!-- PREVIEW SECTION -->
+<div id="previewSection" style="display:none">
+  <div class="header">
+    <div>
+      <div class="title">Beeru Bike Point</div>
+      <div class="sub">Two Wheeler Bike New & Old Spare Part Available</div>
+      <div class="sub">Gautewadi, Digha Naka, Nr. Empire Tower, Thane Belapur Road, Navi Mumbai 08.</div>
+      <div class="sub">Chaudhari Est., Millat Nagar, Shop No. 8, Goregaon Link Road, Bhandup (W), Mumbai 78.</div>
+    </div>
+    <div class="contact">
+      <div>Mob.: 9867133048 / 9004191922</div>
+      <div style="margin-top:12px"> CASH </div>
+    </div>
+  </div>
+  <div class="info">
+    <div>
+      <div><strong>Ms.:</strong> <span id="prevCust">-</span></div>
+      <div><strong>Bike No.:</strong> <span id="prevBike">-</span></div>
+    </div>
+    <div style="text-align:right">
+      <div><strong>Bill No.:</strong> <span id="prevBill">-</span></div>
+      <div><strong>Date:</strong> <span id="prevDate">-</span></div>
+      <div><strong>Phone:</strong> <span id="prevPhone">-</span></div>
+    </div>
+  </div>
+  <table id="prevItems" style="margin-top:10px">
+    <thead>
+      <tr>
+        <th style="width:60px">Sr. No.</th>
+        <th>PARTICULARS</th>
+        <th style="width:80px">Qty</th>
+        <th style="width:120px">Rate (₹)</th>
+        <th style="width:120px">Amount (₹)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="totals">
+    <div><strong>Rupees In Words:</strong> <span id="prevWords">-</span></div>
+    <div class="right"><strong>TOTAL: ₹ <span id="prevTotal">0.00</span></strong></div>
+  </div>
+  <div class="footer">
+    <p>कृपया काम झाल्यानंतर गाडी १ आठव्यात घेऊन जावे. अन्यथा गाडीबाबत आमची जबाबदारी नाही.</p>
+    <div style="text-align:right;margin-top:28px">
+      <div><strong>For BEERU BIKE POINT</strong></div>
+      <div style="margin-top:40px">Proprietor</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const itemsBody = document.getElementById('itemsBody');
+const grandTotalEl = document.getElementById('grandTotal');
+
+function addRow(data = {}) {
+  const idx = itemsBody.children.length + 1;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="sr">${idx}</td>
+    <td><input class="part" type="text" value="${data.part||''}" style="width:100%"></td>
+    <td><input class="qty" type="number" value="${data.qty||1}" style="width:100%"></td>
+    <td><input class="rate" type="number" value="${data.rate||0}" style="width:100%"></td>
+    <td class="amt">0.00</td>
+    <td><button class="del">X</button></td>
+  `;
+  itemsBody.appendChild(tr);
+  tr.querySelectorAll('.qty, .rate').forEach(inp => inp.addEventListener('input', updateTotals));
+  tr.querySelector('.del').addEventListener('click', () => { tr.remove(); refreshSr(); updateTotals(); });
+  updateTotals();
+}
+
+function refreshSr(){
+  Array.from(itemsBody.children).forEach((tr,i) => tr.querySelector('.sr').textContent = i+1);
+}
+
+function updateTotals(){
+  let total = 0;
+  Array.from(itemsBody.children).forEach(tr => {
+    const qty = parseFloat(tr.querySelector('.qty').value) || 0;
+    const rate = parseFloat(tr.querySelector('.rate').value) || 0;
+    const amt = +(qty * rate).toFixed(2);
+    tr.querySelector('.amt').textContent = amt.toFixed(2);
+    total += amt;
+  });
+  grandTotalEl.textContent = total.toFixed(2);
+}
+
+document.getElementById('addRowBtn').addEventListener('click', () => addRow());
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if(!confirm('Clear all data?')) return;
+  document.querySelectorAll('#customer,#billNo,#bikeNo,#phone,#date,#rupeesWords').forEach(e=>e.value='');
+  itemsBody.innerHTML=''; updateTotals();
+});
+addRow();
+
+document.getElementById('previewBtn').addEventListener('click', () => {
+  updateTotals();
+  const total = parseFloat(grandTotalEl.textContent) || 0;
+  document.getElementById('prevCust').textContent = document.getElementById('customer').value;
+  document.getElementById('prevBill').textContent = document.getElementById('billNo').value;
+  document.getElementById('prevBike').textContent = document.getElementById('bikeNo').value;
+  document.getElementById('prevPhone').textContent = document.getElementById('phone').value;
+  document.getElementById('prevDate').textContent = document.getElementById('date').value;
+  document.getElementById('prevWords').textContent = document.getElementById('rupeesWords').value || (total+" Rupees Only");
+  document.getElementById('prevTotal').textContent = total.toFixed(2);
+
+  const tbody = document.querySelector('#prevItems tbody');
+  tbody.innerHTML = '';
+  Array.from(itemsBody.children).forEach((tr,i) => {
+    const part = tr.querySelector('.part').value;
+    const qty = tr.querySelector('.qty').value;
+    const rate = tr.querySelector('.rate').value;
+    const amt = tr.querySelector('.amt').textContent;
+    tbody.innerHTML += `<tr>
+      <td>${i+1}</td><td>${part}</td><td>${qty}</td>
+      <td style="text-align:right">${parseFloat(rate).toFixed(2)}</td>
+      <td style="text-align:right">${amt}</td>
+    </tr>`;
+  });
+
+  document.getElementById('previewSection').style.display = 'block';
+});
+</script>
+
+</body>
+</html>
