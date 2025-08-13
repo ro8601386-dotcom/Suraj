@@ -1,198 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Beeru Bike Point - Bill</title>
+<meta charset="UTF-8">
+<title>Beeru Bike Point - Premium Billing</title>
 <style>
-  body{font-family:Arial, sans-serif;margin:20px}
-  h1{font-size:20px}
-  .row{display:flex;gap:10px;align-items:center;margin-bottom:8px}
-  input{padding:6px;font-size:14px}
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  table th, table td{border:1px solid #bbb;padding:6px;text-align:left}
-  .actions{margin-top:12px}
-  button{padding:8px 12px}
-  /* Preview section styling */
-  #previewSection{border-top:2px solid #000;margin-top:30px;padding-top:20px}
-  .header{display:flex;justify-content:space-between;align-items:center}
-  .title{font-size:22px;font-weight:700}
-  .sub{font-size:12px;color:#333}
-  .contact{text-align:right;font-size:12px}
-  .info{margin-top:12px;display:flex;justify-content:space-between}
-  .info div{min-width:0}
-  .totals{margin-top:10px;display:flex;justify-content:space-between}
-  .right{min-width:260px;text-align:right}
-  .footer{margin-top:20px;font-size:12px}
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background: #f0f4f8; }
+  header { background: #4a90e2; padding: 20px; color: #fff; text-align: center; border-bottom: 4px solid #357ab8; }
+  h1 { margin: 0; font-family: 'Comic Sans MS', cursive; }
+  main { padding: 20px; max-width: 1200px; margin:auto; background: #fff; border-radius:12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);}
+  h2 { margin-top:0; color:#2c3e50; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #4a90e2; color: #fff; border-radius:6px; }
+  input[type="text"], input[type="number"] { width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #aaa; }
+  button { padding: 8px 14px; border: none; background: #4a90e2; color: white; cursor: pointer; border-radius: 6px; margin:2px;}
+  button:hover { background: #357ab8; }
+  .danger { background: #e74c3c; }
+  .danger:hover { background: #c0392b; }
+  .success { background: #2ecc71; }
+  .success:hover { background: #27ae60; }
+
+  footer { text-align: center; padding: 12px; margin-top:20px; font-size:14px; color:#555; }
+
+  /* Modal */
+  .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; }
+  .modal.open { display: flex; }
+  .modal-content { background: #fff; padding: 20px; border-radius: 12px; max-width: 800px; width: 90%; max-height: 90%; overflow:auto; box-shadow:0 10px 30px rgba(0,0,0,0.2);}
+  .modal-content h3 { margin-top:0; text-align:center; }
+  .close-btn { float:right; cursor:pointer; font-size:22px; background:none; border:none; color:#e74c3c; }
+
+  /* Logo */
+  .logo { width:60px; height:60px; object-fit: contain; display:block; margin:auto; margin-bottom:10px; }
+
+  .customer-info { display:flex; justify-content:space-between; margin-top:10px; margin-bottom:10px; }
+  .customer-info div { text-align:left; }
 </style>
 </head>
 <body>
 
-<h1>Beeru Bike Point — Create Bill</h1>
+<header>
+  <h1>Beeru Bike Point</h1>
+  <p>Fast, Reliable & Affordable Bike Servicing</p>
+</header>
 
-<!-- FORM -->
-<div>
-  <div class="row">
-    <label>Customer:</label><input id="customer" style="flex:1" />
-    <label>Bill No.:</label><input id="billNo" style="width:80px" value="832" />
-    <label>Date:</label><input id="date" type="date" />
-  </div>
-  <div class="row">
-    <label>Bike No.:</label><input id="bikeNo" style="flex:1" />
-    <label>Phone:</label><input id="phone" style="width:140px" />
-  </div>
-</div>
+<main>
+  <h2>Customer Details</h2>
+  <label>Name: <input type="text" id="custName" placeholder="e.g. Suraj"></label>
+  <label>Phone: <input type="text" id="custPhone" placeholder="e.g. 98xxxxxx22"></label>
+  <label>Vehicle No: <input type="text" id="vehicleNo" placeholder="e.g. MH-02-AB-1234"></label>
 
-<h3>Items</h3>
-<table id="itemsTable">
-<thead>
-<tr>
-  <th style="width:60px">Sr. No.</th>
-  <th>Particulars</th>
-  <th style="width:80px">Qty</th>
-  <th style="width:120px">Rate (₹)</th>
-  <th style="width:120px">Amount (₹)</th>
-  <th style="width:60px">Action</th>
-</tr>
-</thead>
-<tbody id="itemsBody"></tbody>
-</table>
-
-<div style="margin-top:8px"><button id="addRowBtn">+ Add Row</button></div>
-
-<div style="margin-top:12px">
-  <label>Rupees In Words:</label>
-  <input id="rupeesWords" style="width:300px" />
-  <span style="margin-left:20px"><strong>Total: ₹ <span id="grandTotal">0.00</span></strong></span>
-</div>
-
-<div class="actions">
-  <button id="previewBtn">Show Bill Preview Below</button>
-  <button id="clearBtn" style="margin-left:8px">Clear</button>
-</div>
-
-<!-- PREVIEW SECTION -->
-<div id="previewSection" style="display:none">
-  <div class="header">
-    <div>
-      <div class="title">Beeru Bike Point</div>
-      <div class="sub">Two Wheeler Bike New & Old Spare Part Available</div>
-      <div class="sub">Gautewadi, Digha Naka, Nr. Empire Tower, Thane Belapur Road, Navi Mumbai 08.</div>
-      <div class="sub">Chaudhari Est., Millat Nagar, Shop No. 8, Goregaon Link Road, Bhandup (W), Mumbai 78.</div>
-    </div>
-    <div class="contact">
-      <div>Mob.: 9867133048 / 9004191922</div>
-      <div style="margin-top:12px"> CASH </div>
-    </div>
-  </div>
-  <div class="info">
-    <div>
-      <div><strong>Ms.:</strong> <span id="prevCust">-</span></div>
-      <div><strong>Bike No.:</strong> <span id="prevBike">-</span></div>
-    </div>
-    <div style="text-align:right">
-      <div><strong>Bill No.:</strong> <span id="prevBill">-</span></div>
-      <div><strong>Date:</strong> <span id="prevDate">-</span></div>
-      <div><strong>Phone:</strong> <span id="prevPhone">-</span></div>
-    </div>
-  </div>
-  <table id="prevItems" style="margin-top:10px">
+  <h2>Create Bill</h2>
+  <table id="itemsTable">
     <thead>
       <tr>
-        <th style="width:60px">Sr. No.</th>
-        <th>PARTICULARS</th>
-        <th style="width:80px">Qty</th>
-        <th style="width:120px">Rate (₹)</th>
-        <th style="width:120px">Amount (₹)</th>
+        <th>Sr No</th>
+        <th>Particulars</th>
+        <th>Qty</th>
+        <th>Rate (₹)</th>
+        <th>Amount (₹)</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
-  <div class="totals">
-    <div><strong>Rupees In Words:</strong> <span id="prevWords">-</span></div>
-    <div class="right"><strong>TOTAL: ₹ <span id="prevTotal">0.00</span></strong></div>
+  <br>
+  <button onclick="addItem()">Add Item</button>
+  <button class="success" onclick="generateBill()">Generate Bill</button>
+
+  <div id="historySection">
+    <h2>Bill History</h2>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Bill No</th>
+          <th>Date</th>
+          <th>Total (₹)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
-  <div class="footer">
-    <p>कृपया काम झाल्यानंतर गाडी १ आठव्यात घेऊन जावे. अन्यथा गाडीबाबत आमची जबाबदारी नाही.</p>
-    <div style="text-align:right;margin-top:28px">
-      <div><strong>For BEERU BIKE POINT</strong></div>
-      <div style="margin-top:40px">Proprietor</div>
-    </div>
+</main>
+
+<!-- Modal -->
+<div class="modal" id="invoiceModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <div id="invoiceBody"></div>
   </div>
 </div>
 
+<footer>
+  &copy; 2025 Beeru Bike Point. All rights reserved.
+</footer>
+
 <script>
-const itemsBody = document.getElementById('itemsBody');
-const grandTotalEl = document.getElementById('grandTotal');
+  let items = [];
+  let billHistory = [];
+  let billCounter = 1;
 
-function addRow(data = {}) {
-  const idx = itemsBody.children.length + 1;
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td class="sr">${idx}</td>
-    <td><input class="part" type="text" value="${data.part||''}" style="width:100%"></td>
-    <td><input class="qty" type="number" value="${data.qty||1}" style="width:100%"></td>
-    <td><input class="rate" type="number" value="${data.rate||0}" style="width:100%"></td>
-    <td class="amt">0.00</td>
-    <td><button class="del">X</button></td>
-  `;
-  itemsBody.appendChild(tr);
-  tr.querySelectorAll('.qty, .rate').forEach(inp => inp.addEventListener('input', updateTotals));
-  tr.querySelector('.del').addEventListener('click', () => { tr.remove(); refreshSr(); updateTotals(); });
-  updateTotals();
-}
+  function addItem() {
+    let tbody = document.querySelector("#itemsTable tbody");
+    let index = items.length;
+    items.push({particular:'', qty:1, rate:0});
 
-function refreshSr(){
-  Array.from(itemsBody.children).forEach((tr,i) => tr.querySelector('.sr').textContent = i+1);
-}
+    let row = tbody.insertRow();
+    row.innerHTML = `
+      <td>${index+1}</td>
+      <td><input type="text" oninput="items[${index}].particular=this.value"></td>
+      <td><input type="number" value="1" min="1" oninput="items[${index}].qty=parseInt(this.value)||0;updateAmount(this,${index})"></td>
+      <td><input type="number" value="0" min="0" oninput="items[${index}].rate=parseFloat(this.value)||0;updateAmount(this,${index})"></td>
+      <td class="amt">0.00</td>
+      <td><button class="danger" onclick="removeItemRow(this,${index})">Delete</button></td>
+    `;
+    row.querySelector('input[type="text"]').focus();
+  }
 
-function updateTotals(){
-  let total = 0;
-  Array.from(itemsBody.children).forEach(tr => {
-    const qty = parseFloat(tr.querySelector('.qty').value) || 0;
-    const rate = parseFloat(tr.querySelector('.rate').value) || 0;
-    const amt = +(qty * rate).toFixed(2);
-    tr.querySelector('.amt').textContent = amt.toFixed(2);
-    total += amt;
-  });
-  grandTotalEl.textContent = total.toFixed(2);
-}
+  function updateAmount(input,index){
+    let row = input.closest("tr");
+    let qty = parseFloat(row.querySelectorAll("input")[1].value)||0;
+    let rate = parseFloat(row.querySelectorAll("input")[2].value)||0;
+    row.querySelector(".amt").textContent = (qty*rate).toFixed(2);
+  }
 
-document.getElementById('addRowBtn').addEventListener('click', () => addRow());
-document.getElementById('clearBtn').addEventListener('click', () => {
-  if(!confirm('Clear all data?')) return;
-  document.querySelectorAll('#customer,#billNo,#bikeNo,#phone,#date,#rupeesWords').forEach(e=>e.value='');
-  itemsBody.innerHTML=''; updateTotals();
-});
-addRow();
+  function removeItemRow(btn,index){
+    btn.closest("tr").remove();
+    items.splice(index,1);
+    document.querySelectorAll("#itemsTable tbody tr").forEach((row,i)=>row.cells[0].textContent=i+1);
+  }
 
-document.getElementById('previewBtn').addEventListener('click', () => {
-  updateTotals();
-  const total = parseFloat(grandTotalEl.textContent) || 0;
-  document.getElementById('prevCust').textContent = document.getElementById('customer').value;
-  document.getElementById('prevBill').textContent = document.getElementById('billNo').value;
-  document.getElementById('prevBike').textContent = document.getElementById('bikeNo').value;
-  document.getElementById('prevPhone').textContent = document.getElementById('phone').value;
-  document.getElementById('prevDate').textContent = document.getElementById('date').value;
-  document.getElementById('prevWords').textContent = document.getElementById('rupeesWords').value || (total+" Rupees Only");
-  document.getElementById('prevTotal').textContent = total.toFixed(2);
+  function generateBill(){
+    const custName = document.getElementById('custName').value.trim();
+    const custPhone = document.getElementById('custPhone').value.trim();
+    const vehicleNo = document.getElementById('vehicleNo').value.trim();
+    if(!custName || !vehicleNo) { alert("Enter customer name and vehicle no"); return; }
 
-  const tbody = document.querySelector('#prevItems tbody');
-  tbody.innerHTML = '';
-  Array.from(itemsBody.children).forEach((tr,i) => {
-    const part = tr.querySelector('.part').value;
-    const qty = tr.querySelector('.qty').value;
-    const rate = tr.querySelector('.rate').value;
-    const amt = tr.querySelector('.amt').textContent;
-    tbody.innerHTML += `<tr>
-      <td>${i+1}</td><td>${part}</td><td>${qty}</td>
-      <td style="text-align:right">${parseFloat(rate).toFixed(2)}</td>
-      <td style="text-align:right">${amt}</td>
-    </tr>`;
-  });
+    if(items.length===0) { alert("Add at least one item"); return; }
+    let total = items.reduce((sum,it)=>sum+(it.qty*it.rate),0);
+    let bill = { 
+      id: billCounter++, 
+      date: new Date().toLocaleString(), 
+      total: total.toFixed(2), 
+      items:[...items],
+      customer: { name: custName, phone: custPhone, vehicle: vehicleNo }
+    };
+    billHistory.push(bill);
+    renderHistory();
+    showInvoiceModal(bill);
+    items=[];
+    document.querySelector("#itemsTable tbody").innerHTML="";
+    document.getElementById('custName').value='';
+    document.getElementById('custPhone').value='';
+    document.getElementById('vehicleNo').value='';
+  }
 
-  document.getElementById('previewSection').style.display = 'block';
-});
+  function renderHistory(){
+    let tbody=document.querySelector("#historyTable tbody");
+    tbody.innerHTML="";
+    billHistory.forEach(bill=>{
+      let row=tbody.insertRow();
+      row.innerHTML=`
+        <td>${bill.id}</td>
+        <td>${bill.date}</td>
+        <td>₹${bill.total}</td>
+        <td>
+          <button onclick="showInvoiceModal(${bill.id})">View</button>
+          <button class="danger" onclick="deleteBill(${bill.id})">Delete</button>
+        </td>
+      `;
+    });
+  }
+
+  function showInvoiceModal(billOrId){
+    let bill = typeof billOrId==='object'? billOrId : billHistory.find(b=>b.id===billOrId);
+    if(!bill) return;
+    let html = `
+      
+      <h3>Invoice - Beeru Bike Point</h3>
+      <div class="customer-info">
+        <div><strong>Customer:</strong> ${bill.customer.name}<br><strong>Phone:</strong> ${bill.customer.phone||'-'}</div>
+        <div><strong>Vehicle:</strong> ${bill.customer.vehicle}<br><strong>Bill No:</strong> ${bill.id}</div>
+        <div><strong>Date:</strong> ${bill.date}</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Sr</th><th>Particulars</th><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bill.items.map((it,i)=>`<tr>
+            <td>${i+1}</td>
+            <td>${it.particular}</td>
+            <td>${it.qty}</td>
+            <td>${it.rate.toFixed(2)}</td>
+            <td>${(it.qty*it.rate).toFixed(2)}</td>
+          </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align:right;font-weight:bold">Total</td>
+            <td>${bill.total}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <p style="margin-top:10px; font-size:12px; color:#555;">* Computer generated invoice. Please keep this for records.</p>`;
+    document.getElementById('invoiceBody').innerHTML=html;
+    document.getElementById('invoiceModal').classList.add('open');
+  }
+
+  function closeModal(){ document.getElementById('invoiceModal').classList.remove('open'); }
+  function deleteBill(id){ billHistory=billHistory.filter(b=>b.id!==id); renderHistory(); }
 </script>
 
 </body>
